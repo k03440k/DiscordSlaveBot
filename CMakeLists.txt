@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required (VERSION 3.8 FATAL_ERROR)
 
-set(PROJECT_NAME "Slave Bot")
+set(PROJECT_NAME SlaveBot)
 
 project (${PROJECT_NAME})
 

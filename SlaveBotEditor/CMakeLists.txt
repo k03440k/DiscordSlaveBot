@@ -7,9 +7,9 @@ project(${EDITOR_PROJECT_NAME})
 set(SCRIPT_PATH src/)
 add_executable(${EDITOR_PROJECT_NAME}
     ${SCRIPT_PATH}main.cpp
-)
+)	
 
-#add_subdirectory(../Engine3DCore ${CMAKE_CURRENT_BINARY_DIR}/Engine3DCore)
+#add_subdirectory(../SlaveBotCore)
 target_link_libraries(${EDITOR_PROJECT_NAME} PRIVATE SlaveBotCore)
 target_compile_features(${EDITOR_PROJECT_NAME} PUBLIC cxx_std_17)
 
