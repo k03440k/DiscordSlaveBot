@@ -1,5 +1,7 @@
 #include "../includes/SlaveBot/SlaveBot.hpp"
 
+#include "../includes/SlaveBot/utils/Log.hpp"
+
 #include <iomanip>
 
 namespace sb
@@ -7,21 +9,23 @@ namespace sb
     void SlaveBot::MakeTimer(const dpp::message_create_t& e)
     {
 #ifdef DEBUG_COMMANDS
-        PrintReceivedCommand(e.msg.content);
+        LOG_INFO(e.msg.content);
 #endif // DEBUG_COMMANDS
 
         const std::string request(e.msg.content);
-
+        
         s_t _time{ 0 };
         const Utils::byte_t charsToTime = CommandsList()[0].size();
         Utils::byte_t charsToTimeType = charsToTime;//to time_t type(Second, minute_t, hour_t)
         std::string time_t;//time_t from str
 
+#pragma region find count of chars to time type
         for (Utils::byte_t i = 0; request[i + charsToTime] != ' '; i++)
         {
             time_t.push_back(request[i + charsToTime]);//add numbers from str
             charsToTimeType++;
         }
+#pragma endregion
         if (charsToTimeType != charsToTime && time_t.size() != 0)
         {
             std::string typeOfTime;
@@ -60,11 +64,12 @@ namespace sb
             else
             {
 #ifdef DEBUG_TIMER
-                std::cout << "\n(TIMER)TIME IN SECONDS: " << _time.time_in_seconds << '\n';
+                LOG_INFO("(TIMER)TIME IN SECONDS: " << _time.time_in_seconds);
 #endif // DEBUG
-                timer_t timer(_time);
+                //timer_t timer(_time);
+                timer.set_new_time(_time);
                 isTimer = true;
-                std::thread start([&timer] {timer.start(); });
+                std::thread start([this] {timer.start();});
                 std::thread timer_work([&]
                                        {
                                            const dpp::message _start = dpp::message(e.msg.channel_id, "timer has just started the work!",
@@ -76,11 +81,10 @@ namespace sb
                 unsigned int time_to_end = atof(time_t.c_str()) / 4;
                 while (true)
                 {
-                    
                     if (timer.is_stopped() || !isTimer)
                     {
 #ifdef DEBUG_TIMER
-                        std::cout << "\n(TIMER)TIMER HAS JUST ENDED THE WORK! | ELAPSED TIME: " << timer.elapsed_time() << '\n';
+                        LOG_INFO("(TIMER)TIMER HAS JUST ENDED THE WORK! | ELAPSED TIME: " << timer.elapsed_time());
 #endif // DEBUG
                         //print end!
                         const dpp::message _end = dpp::message(e.msg.channel_id, "timer has just ended the work!",
@@ -93,11 +97,11 @@ namespace sb
                     }
                     else if (!timer.is_stopped() && timer.is_updated())
                     {
-
+                        
                         if (timer.elapsed_time().time_in_seconds + 1 == time_to_end && timer.get_start_time().time_in_seconds != time_to_end)
                         {
 #ifdef DEBUG_TIMER
-                            std::cout << "\n(TIMER)ELAPSED TIME: " << timer.elapsed_time() << " | TIME TO END: " << timer.time_to_end() << '\n';
+                            LOG_INFO("(TIMER)ELAPSED TIME: " << timer.elapsed_time() << " | TIME TO END : " << timer.time_to_end());
 #endif // DEBUG 
                             const std::string to_send("time to end is: " + std::to_string(time_to_end) + " of started " + std::to_string(_time.time_in_seconds + 1) + " seconds");
                             const dpp::message how_time_elapsed = dpp::message(e.msg.channel_id, to_send,
@@ -110,22 +114,25 @@ namespace sb
                     }
                 }
                                        });
-                std::thread timer_stop([this] {
-                    this->on_message_create([this](const dpp::message_create_t& event)
-                                            {
-                                                std::cout << "\nSUKA\n";
-                                                if (event.msg.content.find(CommandsList()[2]) != std::string::npos)
-                                                {
-                                                    StopTimer(event);
-                                                }
-                                            }
-                );
-                                       });
+                /*std::thread stopThread([this]
+                {
+                if(!timer.is_stopped() || isTimer)
+                {
+                on_message_create([this](const dpp::message_create_t& event)
+                {
+                if (event.msg.content.find(CommandsList()[2]) != std::string::npos)
+                {
+                 LOG_INFO("STOP");
+                StopTimer(event);
+                }
+                });
+                }
+                });*/
                 start.join();
                 timer_work.join();
-                timer_stop.detach();
             }
         }
+        timer.clear();
     }
 
     void SlaveBot::StopTimer(const dpp::message_create_t& e)
@@ -133,6 +140,8 @@ namespace sb
         if (isTimer)
         {
             isTimer = false;
+            timer.start(false);
+            timer.clear();
         }
         else
         {
@@ -145,7 +154,7 @@ namespace sb
     void SlaveBot::PrintAllCommands(const dpp::message_create_t& e) noexcept
     {
 #ifdef DEBUG_COMMANDS
-        PrintReceivedCommand(e.msg.content);
+        LOG_INFO(e.msg.content);
 #endif // DEBUG_COMMANDS
 
         std::string commands;
@@ -160,9 +169,5 @@ namespace sb
                                                         e.msg.channel_id);
 
         message_create(help_command);
-    }
-    void SlaveBot::PrintReceivedCommand(const std::string& command) const noexcept
-    {
-        std::cout << "\nRECEIVED COMMAND : " << command << '\n';
     }
 }

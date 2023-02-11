@@ -87,6 +87,13 @@ namespace sb
 			{
 				return time_before_counting;
 			}
+			void clear()
+			{
+				started = false;
+				is_updating = false;
+				time_before_counting = _time(0);
+				_time_to_end = _time(0);
+			}
 		};
 	}
 }

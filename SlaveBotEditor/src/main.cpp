@@ -1,5 +1,9 @@
+//#define DEBUG_COMMANDS
+//#define DEBUG_TIMER
+
 //#include "fuckingSlave/tlib/timer/timer.h"
 #include <SlaveBot/SlaveBot.hpp>
+#include <SlaveBot/Utils/Log.hpp>
 //#include <map>
 using namespace sb;
 /* Be sure to place your token in the line below.
@@ -10,18 +14,30 @@ using namespace sb;
  * https://discord.com/oauth2/authorize?client_id=940762342495518720&scope=bot+applications.commands&permissions=139586816064
  */
 
+void bot_work();
+void bot_work1();
+
+
 int main()
 {
-    std::string BOT_TOKEN = "MTAzMTIzNTcwOTQ2MzQyOTE2MQ.G6QuV_.UCcd5NQCAaALFw4XeeEzJPKkGvzf2HMaBZ-NRE";
+    bot_work();
+
+    return 0;
+}
+
+void bot_work()
+{
+    std::string BOT_TOKEN = "I WILL NOT SHARE WITH TOKEN!!!";
     SlaveBot bot(BOT_TOKEN, dpp::i_default_intents | dpp::i_message_content);
     bot.on_log(dpp::utility::cout_logger());
+
     bot.on_message_create([&bot](const dpp::message_create_t& event)
                           {
-                              //content of event
-                              const std::string CT = event.msg.content;
+    //content of event
+    const std::string CT = event.msg.content;
+    
     if (event.msg.author != bot.me)
     {
-        std::cout << "\nCALLED\n";
         if (CT.find(bot.CommandsList()[0]) != std::string::npos)
         {
             bot.MakeTimer(event);
@@ -35,12 +51,6 @@ int main()
             bot.PrintAllCommands(event);
         }
     }
-    /*dpp::collected_reaction a1;
-    a1.react_guild->id = event.msg.guild_id;
-    std::cout << a1.react_user.username;*/
-    });
-
+                          });
     bot.start(dpp::st_wait);
-
-    return 0;
 }
