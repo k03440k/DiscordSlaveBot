@@ -114,20 +114,6 @@ namespace sb
                     }
                 }
                                        });
-                /*std::thread stopThread([this]
-                {
-                if(!timer.is_stopped() || isTimer)
-                {
-                on_message_create([this](const dpp::message_create_t& event)
-                {
-                if (event.msg.content.find(CommandsList()[2]) != std::string::npos)
-                {
-                 LOG_INFO("STOP");
-                StopTimer(event);
-                }
-                });
-                }
-                });*/
                 start.join();
                 timer_work.join();
             }
