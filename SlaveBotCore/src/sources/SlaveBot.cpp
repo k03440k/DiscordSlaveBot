@@ -52,13 +52,21 @@ namespace sb
                 _time.time_in_seconds = atoi(time_t.c_str()) * pow(tlib::uoft::TIME_BASE, s_t::to_divide_seconds());
             }
             if (_time.time_in_seconds >= 1) _time.time_in_seconds--;
-            if (_time > h_t(24))
+            if (_time > s_t(24))
             {
-                dpp::message msg_error_big_time = dpp::message(e.msg.channel_id, "error: available time cannot be bigger than 24 hours or 1'440 minutes, or 86'400 seconds",
+                dpp::message error_big_time = dpp::message(e.msg.channel_id, "error: available time cannot be bigger than 24 hours or 1'440 minutes, or 86'400 seconds",
                                                                dpp::message_type::mt_reply).set_reference
                                                                (e.msg.id, e.msg.guild_id,
                                                                 e.msg.channel_id);
-                message_create(msg_error_big_time);
+                message_create(error_big_time);
+            }
+            else if (_time == s_t(0))
+            {
+                dpp::message error_zero_time = dpp::message(e.msg.channel_id, "error: available time cannot be bigger than 24 hours or 1'440 minutes, or 86'400 seconds",
+                    dpp::message_type::mt_reply).set_reference
+                    (e.msg.id, e.msg.guild_id,
+                        e.msg.channel_id);
+                message_create(error_zero_time);
             }
             //timer starts
             else
@@ -98,12 +106,12 @@ namespace sb
                     else if (!timer.is_stopped() && timer.is_updated())
                     {
                         
-                        if (timer.elapsed_time().time_in_seconds + 1 == time_to_end && timer.get_start_time().time_in_seconds != time_to_end)
+                        if (timer.elapsed_time().time_in_seconds == time_to_end/* && timer.get_start_time().time_in_seconds != atof(time_t.c_str())*/)
                         {
 #ifdef DEBUG_TIMER
                             LOG_INFO("(TIMER)ELAPSED TIME: " << timer.elapsed_time() << " | TIME TO END : " << timer.time_to_end());
 #endif // DEBUG 
-                            const std::string to_send("time to end is: " + std::to_string(time_to_end) + " of started " + std::to_string(_time.time_in_seconds + 1) + " seconds");
+                            const std::string to_send("time to end is: " + std::to_string(time_to_end) + " second " + " of started " + std::to_string(_time.time_in_seconds + 1) + " seconds");
                             const dpp::message how_time_elapsed = dpp::message(e.msg.channel_id, to_send,
                                                                                dpp::message_type::mt_reply).set_reference
                                                                                (e.msg.id, e.msg.guild_id,
