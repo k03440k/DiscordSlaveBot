@@ -8,7 +8,7 @@
 
 //slave bot
 namespace sb
-{//TODO : ADD POLL
+{
 	class SlaveBot : public dpp::cluster
 	{
 	public:
@@ -35,7 +35,6 @@ namespace sb
 
 		using timer_t = tlib::timer<s_t>;
 	public:
-		//add prefix string
 
 		SlaveBot(const std::string& token, uint32_t intents = dpp::i_default_intents,
 						uint32_t shards = 0, uint32_t cluster_id = 0, uint32_t maxclusters = 1,
@@ -55,7 +54,7 @@ namespace sb
 
 		void StopTimer(const dpp::message_create_t& e);
 
-		COMMANDS("!timer ", "!Fhelp", "!stopTimer")
+		COMMANDS("!timer ", "!Fhelp"/*, "!stopTimer"*/)
 		
 		/*
 		* prints all commands of bot
